@@ -17,8 +17,4 @@ sequenceDiagram
 
 
     deactivate server
-
-
-
-
 ```
