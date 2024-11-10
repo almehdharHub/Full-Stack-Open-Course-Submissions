@@ -3,9 +3,10 @@ import { useState } from "react";
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>;
 
 const StatisticLine = ({ text, value }) => (
-  <p>
-    {text} {value}
-  </p>
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
 );
 
 const App = () => {
@@ -25,14 +26,19 @@ const App = () => {
       <Button onClick={() => setBad(bad + 1)} text="Bad" />
       <h1>Statistics</h1>
       {all > 0 ? (
-        <>
-          <StatisticLine text="Good" value={good} />
-          <StatisticLine text="Neutral" value={neutral} />
-          <StatisticLine text="Bad" value={bad} />
-          <StatisticLine text="Total feedback" value={all} />
-          <StatisticLine text="Average score" value={average.toFixed(2)} />
-          <StatisticLine text="Positive feedback" value={positive.toFixed(2)} />
-        </>
+        <table>
+          <tbody>
+            <StatisticLine text="Good" value={good} />
+            <StatisticLine text="Neutral" value={neutral} />
+            <StatisticLine text="Bad" value={bad} />
+            <StatisticLine text="Total feedback" value={all} />
+            <StatisticLine text="Average score" value={average.toFixed(2)} />
+            <StatisticLine
+              text="Positive percentage"
+              value={`${positive.toFixed(2)} %`}
+            />
+          </tbody>
+        </table>
       ) : (
         <p>No feedback given</p>
       )}
