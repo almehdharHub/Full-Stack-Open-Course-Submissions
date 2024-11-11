@@ -9,15 +9,24 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchName, setSearchName] = useState("");
-  const [idCounter, setIdCounter] = useState(5);
+  const [idCounter, setIdCounter] = useState(0);
   useEffect(() => {
     console.log("effect");
     axios.get("http://localhost:3001/persons").then((response) => {
       console.log("promise fulfilled");
       setPersons(response.data);
+
+      const highestId = response.data.reduce(
+        (maxId, person) => Math.max(maxId, person.id),
+        0
+      );
+
+      setIdCounter(highestId + 1);
+      console.log("highestId", highestId);
+
+      console.log(response.data);
     });
   }, []);
-  console.log("render", persons.length, "persons");
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -29,11 +38,19 @@ const App = () => {
       alert(`${newName} is already added to phonebook`);
     } else {
       const newPerson = { name: newName, number: newNumber, id: idCounter };
-      setIdCounter(idCounter + 1);
-      setPersons(persons.concat(newPerson));
-      setNewName("");
-      setNewNumber("");
-      setSearchName("");
+      axios
+        .post("http://localhost:3001/persons", newPerson)
+        .then((response) => {
+          setPersons(persons.concat(response.data));
+          setIdCounter(idCounter + 1);
+          setNewName("");
+          setNewNumber("");
+          setSearchName("");
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   };
   const handleSearch = (event) => {
