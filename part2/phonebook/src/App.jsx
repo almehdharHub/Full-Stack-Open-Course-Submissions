@@ -11,7 +11,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [searchName, setSearchName] = useState("");
   const [idCounter, setIdCounter] = useState(0);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationType, setNotificationType] = useState(null);
   useEffect(() => {
     appServices.getAll().then((response) => {
       setPersons(response);
@@ -48,9 +49,9 @@ const App = () => {
             setNewName("");
             setNewNumber("");
             setSearchName("");
-            setSuccessMessage(`Updated ${updatedPerson.name}`);
+            setNotificationMessage(`Updated ${updatedPerson.name}`);
             setTimeout(() => {
-              setSuccessMessage(null);
+              setNotificationMessage(null);
             }, 5000);
           })
           .catch((error) => {
@@ -71,9 +72,10 @@ const App = () => {
           setNewName("");
           setNewNumber("");
           setSearchName("");
-          setSuccessMessage(`Added ${response.name}`);
+          setNotificationMessage(`Added ${response.name}`);
+          setNotificationType("success");
           setTimeout(() => {
-            setSuccessMessage(null);
+            setNotificationMessage(null);
           }, 5000);
         })
         .catch((error) => {
@@ -82,11 +84,8 @@ const App = () => {
     }
   };
   const deletePerson = (id) => {
-    if (
-      window.confirm(
-        `Delete ${persons.find((person) => person.id === id).name}?`
-      )
-    ) {
+    const existingPerson = persons.find((person) => person.id === id);
+    if (window.confirm(`Delete ${existingPerson.name}?`)) {
       appServices
         .remove(id)
         .then(() => {
@@ -94,6 +93,13 @@ const App = () => {
         })
         .catch((error) => {
           console.error(error);
+          setNotificationMessage(
+            `Information of ${existingPerson.name} has already been removed from server`
+          );
+          setNotificationType("error");
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
         });
     }
   };
@@ -105,7 +111,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={successMessage} />
+      <Notification message={notificationMessage} type={notificationType} />
       <SearchFilter searchName={searchName} handleSearch={handleSearch} />
       <h2>Add a new person</h2>
       <PersonForm
