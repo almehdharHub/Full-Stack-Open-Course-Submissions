@@ -37,7 +37,11 @@ const App = () => {
     ) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      const newPerson = { name: newName, number: newNumber, id: idCounter };
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+        id: idCounter.toString(),
+      };
       appServices
         .create(newPerson)
         .then((response) => {
@@ -47,6 +51,22 @@ const App = () => {
           setNewNumber("");
           setSearchName("");
           console.log(response);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
+  const deletePerson = (id) => {
+    if (
+      window.confirm(
+        `Delete ${persons.find((person) => person.id === id).name}?`
+      )
+    ) {
+      appServices
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
         })
         .catch((error) => {
           console.error(error);
@@ -71,7 +91,11 @@ const App = () => {
         addPerson={addPerson}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} searchName={searchName} />
+      <Persons
+        persons={persons}
+        searchName={searchName}
+        deletePerson={deletePerson}
+      />
     </div>
   );
 };
