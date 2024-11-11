@@ -11,9 +11,7 @@ const App = () => {
   const [searchName, setSearchName] = useState("");
   const [idCounter, setIdCounter] = useState(0);
   useEffect(() => {
-    console.log("effect");
     appServices.getAll().then((response) => {
-      console.log("promise fulfilled");
       setPersons(response);
 
       const highestId = response.reduce(
@@ -22,20 +20,38 @@ const App = () => {
       );
 
       setIdCounter(highestId + 1);
-      console.log("highestId", highestId);
-
-      console.log(response.data);
     });
   }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
-    if (
-      persons.find(
-        (person) => person.name.toLowerCase() === newName.toLowerCase()
-      )
-    ) {
-      alert(`${newName} is already added to phonebook`);
+    const existingPerson = persons.find(
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
+    );
+    if (existingPerson) {
+      if (
+        window.confirm(
+          `Update phone number for ${newName}? Current number is ${existingPerson.number}`
+        )
+      ) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+        appServices
+          .update(updatedPerson.id, updatedPerson)
+          .then((response) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === existingPerson.id ? updatedPerson : person
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+            setSearchName("");
+            console.log(response);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
     } else {
       const newPerson = {
         name: newName,

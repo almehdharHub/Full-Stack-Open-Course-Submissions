@@ -2,7 +2,6 @@ const Persons = ({ persons, searchName, deletePerson }) => {
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().includes(searchName.toLowerCase())
   );
-  console.log("filteredPersons", filteredPersons);
 
   return (
     <div>
