@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import appServices from "./services";
 import SearchFilter from "./SearchFilter";
 import PersonForm from "./PersonForm";
 import Persons from "./Persons";
@@ -12,11 +12,11 @@ const App = () => {
   const [idCounter, setIdCounter] = useState(0);
   useEffect(() => {
     console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
+    appServices.getAll().then((response) => {
       console.log("promise fulfilled");
-      setPersons(response.data);
+      setPersons(response);
 
-      const highestId = response.data.reduce(
+      const highestId = response.reduce(
         (maxId, person) => Math.max(maxId, person.id),
         0
       );
@@ -38,15 +38,15 @@ const App = () => {
       alert(`${newName} is already added to phonebook`);
     } else {
       const newPerson = { name: newName, number: newNumber, id: idCounter };
-      axios
-        .post("http://localhost:3001/persons", newPerson)
+      appServices
+        .create(newPerson)
         .then((response) => {
-          setPersons(persons.concat(response.data));
+          setPersons(persons.concat(response));
           setIdCounter(idCounter + 1);
           setNewName("");
           setNewNumber("");
           setSearchName("");
-          console.log(response.data);
+          console.log(response);
         })
         .catch((error) => {
           console.error(error);
