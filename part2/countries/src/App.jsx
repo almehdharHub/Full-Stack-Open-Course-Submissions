@@ -1,7 +1,26 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import axious from "axios";
 
 const Country = ({ filteredCountries, formatLanguages }) => {
+  const [weather, setWeather] = useState({});
+
+  const apiKey = "9fedffbed67765464955dbe40eb350c5";
+  const iconApi = `https://openweathermap.org/img/wn/${
+    weather && weather.weather[0].icon
+  }@2x.png`;
+
+  useEffect(() => {
+    axious
+      .get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${filteredCountries[0].capital}&appid=${apiKey}&units=metric`
+      )
+      .then((response) => {
+        setWeather(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => console.error(error));
+  }, []);
   return (
     <>
       <h2>{filteredCountries[0].name.common}</h2>
@@ -17,6 +36,16 @@ const Country = ({ filteredCountries, formatLanguages }) => {
         alt={filteredCountries[0].flags.alt}
         style={{ width: "200px", border: "1px solid black" }}
       />
+      <h2>Weather in {filteredCountries[0].capital}</h2>
+      <p>temperature: {weather && weather.main.temp} °C</p>
+      <img
+        src={iconApi}
+        alt={weather && weather.weather[0].description}
+        style={{
+          width: "100px",
+        }}
+      />
+      <p>wind: {weather && weather.wind.speed} m/s</p>
     </>
   );
 };
@@ -47,7 +76,8 @@ const App = () => {
       .get("https://studies.cs.helsinki.fi/restcountries/api/all")
       .then((response) => {
         setCountries(response.data);
-      });
+      })
+      .catch((error) => console.error(error));
   }, []);
 
   const handleChange = (event) => {
