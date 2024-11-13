@@ -6,9 +6,6 @@ const Country = ({ filteredCountries, formatLanguages }) => {
   const [weather, setWeather] = useState({});
 
   const apiKey = "9fedffbed67765464955dbe40eb350c5";
-  const iconApi = `https://openweathermap.org/img/wn/${
-    weather && weather.weather[0].icon
-  }@2x.png`;
 
   useEffect(() => {
     axious
@@ -36,15 +33,25 @@ const Country = ({ filteredCountries, formatLanguages }) => {
         style={{ width: "200px", border: "1px solid black" }}
       />
       <h2>Weather in {filteredCountries[0].capital}</h2>
-      <p>temperature: {weather && weather.main.temp} °C</p>
+      <button
+        onClick={() => {
+          console.log(weather);
+        }}
+      >
+        log weather
+      </button>
+      <p>temperature: {weather.weather && weather.main.temp} °C</p>
       <img
-        src={iconApi}
-        alt={weather && weather.weather[0].description}
+        src={
+          weather.weather &&
+          `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+        }
+        alt={weather.weather && weather.weather[0].description}
         style={{
           width: "100px",
         }}
       />
-      <p>wind: {weather && weather.wind.speed} m/s</p>
+      <p>wind: {weather.weather && weather.wind.speed} m/s</p>
     </>
   );
 };
@@ -100,6 +107,7 @@ const App = () => {
     <>
       <p style={{ display: "inline" }}>find countries:</p>
       <input type="text" onChange={handleChange} />
+      <button onClick={() => console.log(countries)}>log countries</button>
       <br />
       {searchedCountries && filteredCountries.length > 10 ? (
         "Too many matches, specify another filter"
