@@ -1,6 +1,43 @@
 import { useState, useEffect } from "react";
 import axious from "axios";
 
+const Country = ({ filteredCountries, formatLanguages }) => {
+  return (
+    <>
+      <h2>{filteredCountries[0].name.common}</h2>
+      <p>capital: {filteredCountries[0].capital}</p>
+      <p>
+        population:{" "}
+        {new Intl.NumberFormat().format(filteredCountries[0].population)}
+      </p>
+      <h3>languages</h3>
+      <ul>{formatLanguages(filteredCountries[0].languages)}</ul>
+      <img
+        src={filteredCountries[0].flags.svg}
+        alt={filteredCountries[0].flags.alt}
+        style={{ width: "200px", border: "1px solid black" }}
+      />
+    </>
+  );
+};
+const TenCountries = ({ filteredCountries, setSearchedCountries }) => {
+  return (
+    <>
+      {filteredCountries.map((country, index) => (
+        <p key={index}>
+          {country.name.common}{" "}
+          <button
+            onClick={() => {
+              setSearchedCountries(country.name.common);
+            }}
+          >
+            show
+          </button>
+        </p>
+      ))}
+    </>
+  );
+};
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [searchedCountries, setSearchedCountries] = useState("");
@@ -35,34 +72,24 @@ const App = () => {
       <p style={{ display: "inline" }}>find countries:</p>
       <input type="text" onChange={handleChange} />
       <br />
-      {searchedCountries && filteredCountries.length > 10
-        ? "Too many matches, specify another filter"
-        : searchedCountries &&
-          filteredCountries.length < 10 &&
-          filteredCountries.length > 1
-        ? filteredCountries.map((country, index) => (
-            <p key={index}>{country.name.common}</p>
-          ))
-        : searchedCountries &&
-          filteredCountries.length === 1 && (
-            <>
-              <h2>{filteredCountries[0].name.common}</h2>
-              <p>capital: {filteredCountries[0].capital}</p>
-              <p>
-                population:{" "}
-                {new Intl.NumberFormat().format(
-                  filteredCountries[0].population
-                )}
-              </p>
-              <h3>languages</h3>
-              <ul>{formatLanguages(filteredCountries[0].languages)}</ul>
-              <img
-                src={filteredCountries[0].flags.svg}
-                alt={filteredCountries[0].flags.alt}
-                style={{ width: "200px" }}
-              />
-            </>
-          )}
+      {searchedCountries && filteredCountries.length > 10 ? (
+        "Too many matches, specify another filter"
+      ) : searchedCountries &&
+        filteredCountries.length < 10 &&
+        filteredCountries.length > 1 ? (
+        <TenCountries
+          filteredCountries={filteredCountries}
+          setSearchedCountries={setSearchedCountries}
+        />
+      ) : (
+        searchedCountries &&
+        filteredCountries.length === 1 && (
+          <Country
+            filteredCountries={filteredCountries}
+            formatLanguages={formatLanguages}
+          />
+        )
+      )}
     </>
   );
 };
